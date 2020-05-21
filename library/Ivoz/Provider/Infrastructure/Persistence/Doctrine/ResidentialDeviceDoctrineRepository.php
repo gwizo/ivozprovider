@@ -3,10 +3,12 @@
 namespace Ivoz\Provider\Infrastructure\Persistence\Doctrine;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Ivoz\Core\Infrastructure\Persistence\Doctrine\Model\Helper\CriteriaHelper;
 use Ivoz\Provider\Domain\Model\Domain\DomainInterface;
 use Ivoz\Provider\Domain\Model\ResidentialDevice\ResidentialDevice;
 use Ivoz\Provider\Domain\Model\ResidentialDevice\ResidentialDeviceInterface;
 use Ivoz\Provider\Domain\Model\ResidentialDevice\ResidentialDeviceRepository;
+use Ivoz\Provider\Infrastructure\Persistence\Doctrine\Traits\CountByCriteriaTrait;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -17,6 +19,8 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class ResidentialDeviceDoctrineRepository extends ServiceEntityRepository implements ResidentialDeviceRepository
 {
+    use CountByCriteriaTrait;
+
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, ResidentialDevice::class);
@@ -33,5 +37,14 @@ class ResidentialDeviceDoctrineRepository extends ServiceEntityRepository implem
             "domain" => $domain
         ]);
         return $response;
+    }
+
+    public function countRegistrableDevices(): int
+    {
+        $criteria = CriteriaHelper::fromArray([
+            ['directConnectivity', 'eq', ResidentialDeviceInterface::DIRECTCONNECTIVITY_NO],
+        ]);
+
+        return $this->countByCriteria($criteria);
     }
 }

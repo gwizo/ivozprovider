@@ -3,8 +3,10 @@
 namespace Ivoz\Provider\Infrastructure\Persistence\Doctrine;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Ivoz\Core\Infrastructure\Persistence\Doctrine\Model\Helper\CriteriaHelper;
 use Ivoz\Provider\Domain\Model\Administrator\AdministratorInterface;
 use Ivoz\Provider\Domain\Model\Company\Company;
+use Ivoz\Provider\Domain\Model\Company\CompanyInterface;
 use Ivoz\Provider\Domain\Model\Company\CompanyRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -117,5 +119,27 @@ class CompanyDoctrineRepository extends ServiceEntityRepository implements Compa
         }
 
         return $response;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getVpbxIds()
+    {
+        $qb = $this->createQueryBuilder('self');
+        $criteria = CriteriaHelper::fromArray([
+            ['type', 'eq', CompanyInterface::TYPE_VPBX]
+        ]);
+
+        $qb
+            ->select('self.id')
+            ->addCriteria($criteria);
+
+        $result = $qb->getQuery()->getScalarResult();
+
+        return array_column(
+            $result,
+            'id'
+        );
     }
 }

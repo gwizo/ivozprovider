@@ -31,4 +31,9 @@ interface CompanyRepository extends ObjectRepository, Selectable
      * @return string[]
      */
     public function getNames($brandId = null);
+
+    /**
+     * @return int[]
+     */
+    public function getVpbxIds();
 }

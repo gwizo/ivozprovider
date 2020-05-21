@@ -56,4 +56,25 @@ class UsersLocationDoctrineRepository extends ServiceEntityRepository implements
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @param string[] $domains
+     * @return UsersLocationInterface[]
+     */
+    public function findByDomains(array $domains): array
+    {
+        $qb = $this->createQueryBuilder('self');
+        $qb
+            ->select('self')
+            ->addCriteria(
+                CriteriaHelper::fromArray([
+                    [ 'domain', 'in', $domains ],
+                ])
+            )
+            ->addGroupBy('self.username')
+            ->addGroupBy('self.domain')
+            ->having('MAX(self.expires) = self.expires');
+
+        return $qb->getQuery()->getResult();
+    }
 }

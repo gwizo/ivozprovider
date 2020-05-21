@@ -14,4 +14,6 @@ interface RetailAccountRepository extends ObjectRepository, Selectable
      * @return mixed
      */
     public function findOneByNameAndDomain(string $name, DomainInterface $domain);
+
+    public function countRegistrableDevices(): int;
 }
